@@ -2,7 +2,7 @@
 import { inject } from 'vue'
 
 // Получаем курс от родителя
-const course = inject('course')
+const course = inject('course', null)
 </script>
 
 <template>

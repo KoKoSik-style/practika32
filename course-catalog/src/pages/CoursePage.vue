@@ -8,11 +8,17 @@ const router = useRouter()
 
 // Получаем курс по ID из параметров маршрута
 const course = computed(() =>
-  courses.find(c => c.id === Number(route.params.id))
+  courses.find((c) => c.id === Number(route.params.id))
 )
 
-// Прокидываем курс в дочерние вкладки через provide
+// Прокидываем САМ курс (не ref) в дочерние вкладки через provide.
+// Дети получат уже развёрнутое значение, а благодаря реактивности
+// computed родителя они обновятся при смене :id.
 provide('course', course)
+
+function goBack() {
+  router.push('/courses')
+}
 </script>
 
 <template>
@@ -20,7 +26,7 @@ provide('course', course)
     <!-- Если курс не найден — показываем сообщение -->
     <div v-if="!course">
       <h1>Курс не найден</h1>
-      <button @click="router.push('/courses')">Назад к списку</button>
+      <button @click="goBack">Назад к списку</button>
     </div>
 
     <!-- Если найден — заголовок и вкладки -->
@@ -41,8 +47,22 @@ provide('course', course)
 </template>
 
 <style scoped>
-.page { padding: 24px; font-family: sans-serif; }
-.tabs { display: flex; gap: 12px; margin: 16px 0; }
-.tabs a { text-decoration: none; color: #333; padding: 4px 8px; border-radius: 4px; }
-.tabs a.router-link-active { background: #4caf50; color: #fff; }
+.page { padding: 24px; }
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.tabs a {
+  text-decoration: none;
+  color: var(--text-h);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+.tabs a.router-link-active {
+  background: #4caf50;
+  color: #fff;
+}
 </style>

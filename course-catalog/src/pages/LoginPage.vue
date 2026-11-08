@@ -9,10 +9,19 @@ const router = useRouter()
 const password = ref('')
 const error = ref('')
 
+// Демонстрационный «токен» с фиктивным сроком жизни (1 час).
+// В реальном приложении токен выдаёт сервер.
+function saveFakeToken() {
+  const token = {
+    value: 'demo',
+    expiresAt: Date.now() + 60 * 60 * 1000
+  }
+  localStorage.setItem('authToken', JSON.stringify(token))
+}
+
 function login() {
   if (password.value === '1234') {
-    // Записываем токен в localStorage
-    localStorage.setItem('authToken', 'demo')
+    saveFakeToken()
 
     // Если есть query.redirect — возвращаем туда, откуда пришли
     const redirect = route.query.redirect || '/dashboard'
@@ -38,8 +47,17 @@ function login() {
 </template>
 
 <style scoped>
-.page { padding: 24px; font-family: sans-serif; max-width: 320px; }
-input { display: block; margin-bottom: 8px; padding: 6px; width: 100%; }
-button { padding: 6px 12px; cursor: pointer; }
+.page { padding: 24px; max-width: 320px; }
+input {
+  display: block;
+  margin-bottom: 8px;
+  padding: 6px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  background: var(--bg);
+  color: var(--text-h);
+}
 .error { color: #c00; }
 </style>

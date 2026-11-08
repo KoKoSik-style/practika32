@@ -1,8 +1,10 @@
 <script setup>
 import { inject } from 'vue'
 
-// Получаем курс от родителя через inject
-const course = inject('course')
+// Получаем курс от родителя через inject.
+// Родитель отдаёт развёрнутое значение (computed -> значение),
+// поэтому здесь работаем как с обычным объектом.
+const course = inject('course', null)
 </script>
 
 <template>

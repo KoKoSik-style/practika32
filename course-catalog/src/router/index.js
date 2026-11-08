@@ -24,28 +24,24 @@ const routes = [
     path: '/courses/:id',
     name: 'course',
     component: CoursePage,
-    props: true, // прокидываем id как prop
-    // При заходе на /courses/:id сразу открываем вкладку "Описание"
+    // При заходе на /courses/:id сразу открываем вкладку «Описание»
     redirect: { name: 'course-description' },
     children: [
-      // Вкладки. props: true — чтобы дочерние компоненты получили id
+      // Вкладки. id и параметры передаются через useRoute()/inject
       {
         path: 'description',
         name: 'course-description',
-        component: CourseDescriptionPage,
-        props: true
+        component: CourseDescriptionPage
       },
       {
         path: 'program',
         name: 'course-program',
-        component: CourseProgramPage,
-        props: true
+        component: CourseProgramPage
       },
       {
         path: 'reviews',
         name: 'course-reviews',
-        component: CourseReviewsPage,
-        props: true
+        component: CourseReviewsPage
       }
     ]
   },
@@ -81,26 +77,36 @@ const router = createRouter({
 })
 
 // Глобальный guard: проверка авторизации
-router.beforeEach((to, from, next) => {
-  // Читаем токен из localStorage
-  const isAuth = !!localStorage.getItem('authToken')
+router.beforeEach((to) => {
+  // Читаем токен и проверяем его срок (см. LoginPage)
+  const raw = localStorage.getItem('authToken')
+  let isAuth = false
+
+  if (raw) {
+    try {
+      const data = JSON.parse(raw)
+      // Если структура неожиданная — считаем токен невалидным
+      isAuth = !!data && (!data.expiresAt || data.expiresAt > Date.now())
+    } catch {
+      // Старый формат (просто строка) — считаем валидным для совместимости
+      isAuth = true
+    }
+  }
 
   // Если маршрут требует авторизации, а токена нет —
   // редиректим на /login и запоминаем, куда пользователь шёл
   if (to.meta.requiresAuth && !isAuth) {
-    next({ path: '/login', query: { redirect: to.fullPath } })
-    return
+    return { path: '/login', query: { redirect: to.fullPath } }
   }
 
   // Если пользователь авторизован и идёт на /login —
   // отправляем его в личный кабинет
   if (to.meta.guestOnly && isAuth) {
-    next({ path: '/dashboard' })
-    return
+    return { path: '/dashboard' }
   }
 
   // Во всех остальных случаях — пропускаем
-  next()
+  return true
 })
 
 export default router

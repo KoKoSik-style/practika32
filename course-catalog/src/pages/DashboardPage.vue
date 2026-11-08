@@ -19,6 +19,5 @@ function logout() {
 </template>
 
 <style scoped>
-.page { padding: 24px; font-family: sans-serif; }
-button { padding: 6px 12px; cursor: pointer; }
+.page { padding: 24px; }
 </style>

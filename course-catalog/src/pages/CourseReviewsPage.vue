@@ -2,7 +2,7 @@
 import { inject } from 'vue'
 
 // Получаем курс от родителя
-const course = inject('course')
+const course = inject('course', null)
 </script>
 
 <template>
@@ -20,6 +20,9 @@ const course = inject('course')
 
 <style scoped>
 .reviews { list-style: none; padding: 0; }
-.reviews li { border-bottom: 1px solid #eee; padding: 8px 0; }
+.reviews li {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
+}
 .rating { color: #f39c12; font-size: 14px; }
 </style>

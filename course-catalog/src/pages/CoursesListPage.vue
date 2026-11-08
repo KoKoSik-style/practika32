@@ -6,12 +6,18 @@ import { courses } from '../data/courses'
 const route = useRoute()
 const router = useRouter()
 
-// Флаг загрузки (спиннер)
+// Флаг загрузки (спиннер) — только при первой загрузке
 const loading = ref(true)
+let hasLoadedOnce = false
 
-// При монтировании имитируем задержку 1000 мс
 onMounted(() => {
+  if (hasLoadedOnce) {
+    loading.value = false
+    return
+  }
+  // Имитируем задержку 1000 мс только при первом заходе
   setTimeout(() => {
+    hasLoadedOnce = true
     loading.value = false
   }, 1000)
 })
@@ -23,7 +29,7 @@ const currentCategory = computed(() => route.query.category || 'all')
 const filteredCourses = computed(() => {
   const cat = currentCategory.value
   if (cat === 'all') return courses
-  return courses.filter(c => c.category === cat)
+  return courses.filter((c) => c.category === cat)
 })
 
 // Переключение фильтра — обновляем URL через router.push
@@ -36,10 +42,8 @@ function setCategory(cat) {
   <div class="page">
     <h1>Список курсов</h1>
 
-    <!-- Спиннер, пока идёт "загрузка" -->
-    <div v-if="loading" class="spinner">
-      Загрузка...
-    </div>
+    <!-- Спиннер, пока идёт «загрузка» -->
+    <div v-if="loading" class="spinner">Загрузка...</div>
 
     <!-- Контент после загрузки -->
     <div v-else>
@@ -48,15 +52,21 @@ function setCategory(cat) {
         <button
           :class="{ active: currentCategory === 'all' }"
           @click="setCategory('all')"
-        >Все</button>
+        >
+          Все
+        </button>
         <button
           :class="{ active: currentCategory === 'frontend' }"
           @click="setCategory('frontend')"
-        >Frontend</button>
+        >
+          Frontend
+        </button>
         <button
           :class="{ active: currentCategory === 'backend' }"
           @click="setCategory('backend')"
-        >Backend</button>
+        >
+          Backend
+        </button>
       </div>
 
       <!-- Список курсов -->
@@ -64,23 +74,36 @@ function setCategory(cat) {
         <div v-for="course in filteredCourses" :key="course.id" class="card">
           <h3>{{ course.title }}</h3>
           <p class="category">Категория: {{ course.category }}</p>
-          <!-- Переход на страницу курса -->
           <RouterLink :to="`/courses/${course.id}`">Подробнее</RouterLink>
         </div>
 
-        <p v-if="filteredCourses.length === 0">В этой категории пока нет курсов.</p>
+        <p v-if="filteredCourses.length === 0">
+          В этой категории пока нет курсов.
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.page { padding: 24px; font-family: sans-serif; }
-.spinner { padding: 24px; font-style: italic; color: #666; }
+.page { padding: 24px; }
+.spinner { padding: 24px; font-style: italic; color: var(--text); }
 .filters { display: flex; gap: 8px; margin-bottom: 16px; }
-.filters button { padding: 6px 12px; cursor: pointer; }
-.filters button.active { background: #4caf50; color: #fff; border: none; }
-.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
-.card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
-.category { color: #777; font-size: 14px; }
+.filters button.active {
+  background: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
+}
+.cards {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.card h3 { margin: 0 0 6px; color: var(--text-h); }
+.category { color: var(--text); font-size: 14px; margin: 0 0 8px; }
 </style>
