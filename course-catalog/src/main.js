@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
-import './style.css'
 import App from './App.vue'
+import router from './router' // подключаем роутер
 
-createApp(App).mount('#app')
+// Создаём приложение, подключаем роутер и монтируем в #app
+createApp(App).use(router).mount('#app')
